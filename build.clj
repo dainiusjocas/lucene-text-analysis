@@ -23,7 +23,7 @@
   (b/javac {:src-dirs  ["java"]
             :class-dir (or (:class-dir opts) class-dir)
             :basis     basis
-            :java-opts ["-source" "8" "-target" "8"]})
+            :java-opts ["-source" "11" "-target" "11"]})
   (println "DONE COMPILING TEXT ANALYSIS JAVA DEPS!"))
 
 (defn deploy "Deploy the JAR to Clojars" [opts]
