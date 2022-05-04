@@ -34,3 +34,9 @@
       (assoc :src-pom "pom.xml.template")
       (bb/jar)
       (bb/deploy)))
+
+(defn trigger-release [opts]
+  (let [tag (str "v" (if (:snapshot opts) snapshot version))]
+    (println "Initiating release for git tag:" tag)
+    (b/git-process {:git-args ["tag" tag]})
+    (b/git-process {:git-args ["push" "origin" tag]})))
