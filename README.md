@@ -1,4 +1,8 @@
-# text-analysis
+[![Clojars Project](https://img.shields.io/clojars/v/lt.jocas/lucene-text-analysis.svg)](https://clojars.org/lt.jocas/lucene-text-analysis)
+[![cljdoc badge](https://cljdoc.org/badge/lt.jocas/lucene-text-analysis)](https://cljdoc.org/d/lt.jocas/lucene-text-analysis/CURRENT)
+[![Tests](https://github.com/dainiusjocas/lucene-text-analysis/actions/workflows/test.yml/badge.svg)](https://github.com/dainiusjocas/lucene-text-analysis/actions/workflows/test.yml)
+
+# lucene-text-analysis
 
 Library to analyze text using [Lucene](https://lucene.apache.org) text analysis pipeline.
 
@@ -11,8 +15,7 @@ Supports 3 ways of analyzing text:
 
 Dependencies:
 ```clojure
-{:deps
- {lt.jocas/lucene-text-analysis {:local/root "modules/text-analysis"}}}
+{:deps {lt.jocas/lucene-text-analysis {:mvn/version "1.0.4"}}}
 ```
 
 Code:
