@@ -4,7 +4,7 @@
 
 # lucene-text-analysis
 
-Library to analyze text using [Lucene](https://lucene.apache.org) text analysis pipeline.
+Library to inspect the output of the [Lucene](https://lucene.apache.org) text analysis pipeline.  
 
 Supports 3 ways of analyzing text:
 - string to list of strings;
