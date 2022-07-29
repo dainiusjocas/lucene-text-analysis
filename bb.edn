@@ -8,6 +8,9 @@
                   {:doc "Runs unit tests"
                    :depends [compile-java]
                    :task (clojure "-M:test")}
+                  outdated
+                  {:doc  "Checks for outdated dependencies."
+                   :task (clojure "-Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -M -m antq.core")}
                   release
                   {:requires ([clojure.string :as str])
                    :doc      "Makes a git tag and push it to the Github to trigger release with GH action."
