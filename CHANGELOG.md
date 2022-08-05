@@ -4,6 +4,10 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+## v1.0.17 (2022-08-05)
+
+- Fix cljdoc build
+
 ## v1.0.15 (2022-08-05)
 
 - Lucene field name parameter
