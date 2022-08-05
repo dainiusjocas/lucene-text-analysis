@@ -33,7 +33,7 @@ jobs:
       - name: Unit Tests first before releasing
         run: |
           clojure -T:build compile-java
-          clojure -M:test
+          clojure -M:dev:test
 
       - name: Deploy Release
         run: clojure -T:build deploy :snapshot false
