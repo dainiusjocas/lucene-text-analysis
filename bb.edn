@@ -7,7 +7,7 @@
                   test
                   {:doc "Runs unit tests"
                    :depends [compile-java]
-                   :task (clojure "-M:test")}
+                   :task (clojure "-M:dev:test")}
                   outdated
                   {:doc  "Checks for outdated dependencies."
                    :task (clojure "-Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -M -m antq.core")}

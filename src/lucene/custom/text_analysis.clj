@@ -11,10 +11,11 @@
 (defn text->token-strings
   "Given a text (and an optional analyzer) returns a vector of tokens as strings."
   ([^String text] (text->token-strings text (StandardAnalyzer.)))
-  ([^String text ^Analyzer analyzer]
+  ([^String text ^Analyzer analyzer] (text->token-strings text analyzer FIELD_NAME))
+  ([^String text ^Analyzer analyzer ^String field-name]
    (if (nil? text)
      []
-     (let [^TokenStream token-stream (.tokenStream analyzer FIELD_NAME (StringReader. text))
+     (let [^TokenStream token-stream (.tokenStream analyzer field-name (StringReader. text))
            ^CharTermAttribute char-term-attribute (.addAttribute token-stream CharTermAttribute)]
        (.reset token-stream)
        (loop [acc (transient [])]
@@ -43,9 +44,10 @@
      1 -> -2 []
    }`"
   ([^String text] (text->graph text (StandardAnalyzer.)))
-  (^String [^String text ^Analyzer analyzer]
+  (^String [^String text ^Analyzer analyzer] (text->graph text analyzer FIELD_NAME))
+  (^String [^String text ^Analyzer analyzer ^String field-name]
    (let [text (or text "")
-         ^TokenStream token-stream (.tokenStream analyzer FIELD_NAME (StringReader. text))
+         ^TokenStream token-stream (.tokenStream analyzer field-name (StringReader. text))
          ^StringWriter string-writer (StringWriter.)]
      (.toDot (TokenStreamToDot. text token-stream (PrintWriter. string-writer)))
      (.end token-stream)
@@ -68,11 +70,12 @@
    :position 0,
    :positionLength 1}"
   ([^String text] (text->tokens text (StandardAnalyzer.)))
-  ([^String text ^Analyzer analyzer]
+  ([^String text ^Analyzer analyzer] (text->tokens text analyzer FIELD_NAME))
+  ([^String text ^Analyzer analyzer ^String field-name]
    (if (nil? text)
      []
      (let [ONE (int 1)
-           ^TokenStream token-stream (.tokenStream analyzer FIELD_NAME (StringReader. text))
+           ^TokenStream token-stream (.tokenStream analyzer field-name (StringReader. text))
            ^CharTermAttribute char-term-attribute (.addAttribute token-stream CharTermAttribute)
            ^OffsetAttribute offset-attribute (.addAttribute token-stream OffsetAttribute)
            ^PositionIncrementAttribute position-attribute (.addAttribute token-stream PositionIncrementAttribute)
