@@ -4,6 +4,10 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+## v1.0.15 (2022-08-05)
+
+- Lucene field name parameter
+
 ## v1.0.11 (2022-07-29)
 
 - Upgrade Lucene to 9.3.0
