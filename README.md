@@ -15,7 +15,7 @@ Supports 3 ways of analyzing text:
 
 Dependencies:
 ```clojure
-{:deps {lt.jocas/lucene-text-analysis {:mvn/version "1.0.17"}}}
+{:deps {lt.jocas/lucene-text-analysis {:mvn/version "1.0.21"}}}
 ```
 
 Code:
