@@ -105,6 +105,6 @@ Start your REPL.
 
 ## License
 
-Copyright &copy; 2022 [Dainius Jocas](https://www.jocas.lt).
+Copyright &copy; 2023 [Dainius Jocas](https://www.jocas.lt).
 
 Distributed under The Apache License, Version 2.0.
