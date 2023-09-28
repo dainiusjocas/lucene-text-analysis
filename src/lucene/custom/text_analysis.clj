@@ -6,16 +6,22 @@
                                                        PositionLengthAttribute)
            (org.apache.lucene.analysis.standard StandardAnalyzer)))
 
+(set! *warn-on-reflection* true)
+
 (def ^:private ^String FIELD_NAME "not-important")
 
 (defn text->token-strings
-  "Given a text (and an optional analyzer) returns a vector of tokens as strings."
+  "Given a text (and an optional analyzer) returns a vector of tokens as strings.
+  Params:
+  * text: String
+  * analyzer: Lucene Analyzer
+  * field-name can be either string if clojure.lang.Named."
   ([^String text] (text->token-strings text (StandardAnalyzer.)))
   ([^String text ^Analyzer analyzer] (text->token-strings text analyzer FIELD_NAME))
-  ([^String text ^Analyzer analyzer ^String field-name]
+  ([^String text ^Analyzer analyzer field-name]
    (if (nil? text)
      []
-     (let [^TokenStream token-stream (.tokenStream analyzer field-name (StringReader. text))
+     (let [^TokenStream token-stream (.tokenStream analyzer (name field-name) (StringReader. text))
            ^CharTermAttribute char-term-attribute (.addAttribute token-stream CharTermAttribute)]
        (.reset token-stream)
        (loop [acc (transient [])]
@@ -45,9 +51,9 @@
    }`"
   ([^String text] (text->graph text (StandardAnalyzer.)))
   (^String [^String text ^Analyzer analyzer] (text->graph text analyzer FIELD_NAME))
-  (^String [^String text ^Analyzer analyzer ^String field-name]
+  (^String [^String text ^Analyzer analyzer field-name]
    (let [text (or text "")
-         ^TokenStream token-stream (.tokenStream analyzer field-name (StringReader. text))
+         ^TokenStream token-stream (.tokenStream analyzer (name field-name) (StringReader. text))
          ^StringWriter string-writer (StringWriter.)]
      (.toDot (TokenStreamToDot. text token-stream (PrintWriter. string-writer)))
      (.end token-stream)
@@ -68,14 +74,18 @@
    :start_offset 0,
    :end_offset 3,
    :position 0,
-   :positionLength 1}"
+   :positionLength 1}
+   Params:
+   * text: String
+   * analyzer: Lucene Analyzer
+   * field-name can be either string if clojure.lang.Named."
   ([^String text] (text->tokens text (StandardAnalyzer.)))
   ([^String text ^Analyzer analyzer] (text->tokens text analyzer FIELD_NAME))
-  ([^String text ^Analyzer analyzer ^String field-name]
+  ([^String text ^Analyzer analyzer field-name]
    (if (nil? text)
      []
      (let [ONE (int 1)
-           ^TokenStream token-stream (.tokenStream analyzer field-name (StringReader. text))
+           ^TokenStream token-stream (.tokenStream analyzer (name field-name) (StringReader. text))
            ^CharTermAttribute char-term-attribute (.addAttribute token-stream CharTermAttribute)
            ^OffsetAttribute offset-attribute (.addAttribute token-stream OffsetAttribute)
            ^PositionIncrementAttribute position-attribute (.addAttribute token-stream PositionIncrementAttribute)
@@ -83,7 +93,7 @@
            ^PositionLengthAttribute position-length-attribute (.addAttribute token-stream PositionLengthAttribute)]
        (.reset token-stream)
        (loop [acc (transient [])
-              position (int 0)]
+              position 0]
          (if (.incrementToken token-stream)
            (recur (conj! acc (->TokenRecord (.toString char-term-attribute)
                                             (.type type-attriubte)
@@ -93,7 +103,7 @@
                                             (.getPositionLength position-length-attribute)))
                   (if (< ONE (.getPositionLength position-length-attribute))
                     position
-                    (unchecked-add-int position (Math/max (.getPositionIncrement position-attribute) ONE))))
+                    (+ position (Math/max (.getPositionIncrement position-attribute) ONE))))
            (do
              (.end token-stream)
              (.close token-stream)

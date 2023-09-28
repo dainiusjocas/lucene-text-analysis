@@ -1,5 +1,6 @@
 (ns lucene.custom.text-analysis-test
   (:require [clojure.test :refer [deftest is testing]]
+            [lucene.custom.analyzer-wrappers :as analyzer]
             [lucene.custom.text-analysis :as text-analysis])
   (:import (org.apache.lucene.analysis.standard StandardAnalyzer)
            (org.apache.lucene.analysis.miscellaneous PerFieldAnalyzerWrapper)
@@ -41,4 +42,12 @@
   (testing "if field-name is handled with PerFieldAnalyzerWrapper in text->"
     (let [analyzer (PerFieldAnalyzerWrapper. (KeywordAnalyzer.) {"field" (StandardAnalyzer.)})]
       (is (< (count (text-analysis/text->graph "Test TEXT" analyzer))
-             (count (text-analysis/text->graph "Test TEXT" analyzer "field")))))))
+             (count (text-analysis/text->graph "Test TEXT" analyzer "field"))))))
+
+  (testing "if field-name is handled with PerFieldAnalyzerWrapper in text->"
+    (let [field-name :field
+          analyzer (analyzer/->per-field-analyzer-wrapper {:tokenizer :keyword} {field-name {}})]
+      (is (= ["Test TEXT"] (text-analysis/text->token-strings "Test TEXT" analyzer)))
+      (is (= ["Test" "TEXT"] (text-analysis/text->token-strings "Test TEXT" analyzer field-name)))
+      (is (= 2 (count (text-analysis/text->tokens "Test TEXT" analyzer field-name))))
+      (is (string? (text-analysis/text->graph "Test TEXT" analyzer field-name))))))
