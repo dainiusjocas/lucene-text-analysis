@@ -41,4 +41,9 @@
   (testing "if field-name is handled with PerFieldAnalyzerWrapper in text->"
     (let [analyzer (PerFieldAnalyzerWrapper. (KeywordAnalyzer.) {"field" (StandardAnalyzer.)})]
       (is (< (count (text-analysis/text->graph "Test TEXT" analyzer))
+             (count (text-analysis/text->graph "Test TEXT" analyzer "field"))))))
+
+  (testing "if field-name is handled with PerFieldAnalyzerWrapper in text->"
+    (let [analyzer (PerFieldAnalyzerWrapper. (KeywordAnalyzer.) {"field" (StandardAnalyzer.)})]
+      (is (< (count (text-analysis/text->graph "Test TEXT" analyzer))
              (count (text-analysis/text->graph "Test TEXT" analyzer "field")))))))
