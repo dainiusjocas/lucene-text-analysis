@@ -1,5 +1,6 @@
 (ns lucene.custom.text-analysis
   (:import (java.io StringReader PrintWriter StringWriter)
+           (java.util Map)
            (org.apache.lucene.analysis Analyzer TokenStream TokenStreamToDot)
            (org.apache.lucene.analysis.tokenattributes CharTermAttribute OffsetAttribute
                                                        PositionIncrementAttribute TypeAttribute
@@ -89,14 +90,14 @@
            ^CharTermAttribute char-term-attribute (.addAttribute token-stream CharTermAttribute)
            ^OffsetAttribute offset-attribute (.addAttribute token-stream OffsetAttribute)
            ^PositionIncrementAttribute position-attribute (.addAttribute token-stream PositionIncrementAttribute)
-           ^TypeAttribute type-attriubte (.addAttribute token-stream TypeAttribute)
+           ^TypeAttribute type-attribute (.addAttribute token-stream TypeAttribute)
            ^PositionLengthAttribute position-length-attribute (.addAttribute token-stream PositionLengthAttribute)]
        (.reset token-stream)
        (loop [acc (transient [])
               position 0]
          (if (.incrementToken token-stream)
            (recur (conj! acc (->TokenRecord (.toString char-term-attribute)
-                                            (.type type-attriubte)
+                                            (.type type-attribute)
                                             (.startOffset offset-attribute)
                                             (.endOffset offset-attribute)
                                             position
@@ -115,3 +116,14 @@
   (text->token-strings "foo text bar BestClass fooo name" (StandardAnalyzer.))
   (text->graph "fooBarBazs" (StandardAnalyzer.))
   (text->tokens "pre BestClass post" (StandardAnalyzer.)))
+
+(defn doc->token-strings
+  "Given a document iterates through all its fields, applies an analyzer to each field,
+  and returns a map with the same keys and the analyzed text.
+  TIP: the analyzer probably is the PerFieldAnalyzerWrapper."
+  [^Map doc ^Analyzer analyzer]
+  (persistent!
+    (reduce-kv
+      (fn analyze [acc k v]
+        (assoc! acc k (text->token-strings v analyzer k)))
+               (transient {}) doc)))

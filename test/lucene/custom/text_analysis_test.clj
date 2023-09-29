@@ -51,3 +51,16 @@
       (is (= ["Test" "TEXT"] (text-analysis/text->token-strings "Test TEXT" analyzer field-name)))
       (is (= 2 (count (text-analysis/text->tokens "Test TEXT" analyzer field-name))))
       (is (string? (text-analysis/text->graph "Test TEXT" analyzer field-name))))))
+
+(deftest multifield-analysis
+  (let [doc {:field-a "foo bar baz"
+             :field-b "aa bb"
+             :field-c "Apache Lucene"}
+        analyzer (analyzer/->per-field-analyzer-wrapper
+                   {:tokenizer :keyword}
+                   {:field-a {:token-filters [:reverseString]}
+                    :field-b {:token-filters [:uppercase]}})]
+    (is (= {:field-a ["oof" "rab" "zab"]
+            :field-b ["AA" "BB"]
+            :field-c ["Apache Lucene"]}
+           (text-analysis/doc->token-strings doc analyzer)))))
