@@ -1,5 +1,6 @@
 (ns lucene.custom.text-analysis-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.string :as str]
+            [clojure.test :refer [deftest is testing]]
             [lucene.custom.analyzer-wrappers :as analyzer]
             [lucene.custom.text-analysis :as text-analysis])
   (:import (org.apache.lucene.analysis.standard StandardAnalyzer)
@@ -72,4 +73,7 @@
               :start_offset   0
               :token          "Apache Lucene"
               :type           "word"}
-             (into {} (:field-c (text-analysis/doc->tokens doc analyzer))))))))
+             (into {} (:field-c (text-analysis/doc->tokens doc analyzer))))))
+    (testing "doc->graph"
+      (is (str/starts-with?
+            (:field-a (text-analysis/doc->graph doc analyzer)) "digraph")))))

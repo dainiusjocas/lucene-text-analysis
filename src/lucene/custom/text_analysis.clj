@@ -117,21 +117,32 @@
   (text->graph "fooBarBazs" (StandardAnalyzer.))
   (text->tokens "pre BestClass post" (StandardAnalyzer.)))
 
+(defn- doc-analysis [doc analyzer analysis-fn]
+  (persistent!
+    (reduce-kv
+      (fn analyze [acc k v]
+        (assoc! acc k (analysis-fn v analyzer k)))
+      (transient {}) doc)))
+
 (defn doc->token-strings
   "Given a document iterates through all its fields, applies an analyzer to each field,
   and returns a map with the same keys and the analyzed text.
   TIP: the analyzer probably is the PerFieldAnalyzerWrapper."
   [^Map doc ^Analyzer analyzer]
-  (persistent!
-    (reduce-kv
-      (fn analyze [acc k v]
-        (assoc! acc k (text->token-strings v analyzer k)))
-               (transient {}) doc)))
+  (doc-analysis doc analyzer text->token-strings))
 
 (defn doc->tokens
+  "Each field is analyzed into tokens.
+  Params:
+  * doc: flat associative data type
+  * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
   [^Map doc ^Analyzer analyzer]
-  (persistent!
-    (reduce-kv
-      (fn analyze [acc k v]
-        (assoc! acc k (text->tokens v analyzer k)))
-      (transient {}) doc)))
+  (doc-analysis doc analyzer text->tokens))
+
+(defn doc->graph
+  "Each field is analyzed into graph.
+  Params:
+  * doc: flat associative data type
+  * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
+  [^Map doc ^Analyzer analyzer]
+  (doc-analysis doc analyzer text->graph))
