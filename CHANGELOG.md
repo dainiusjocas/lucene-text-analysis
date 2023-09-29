@@ -4,7 +4,7 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
-## v1.0.28 (2023-09-29)
+## v1.0.30 (2023-09-29)
 
 - `field-name` param can be either String or `clojure.lang.Named` (#8)
 - Removed autoboxing of recur arg
