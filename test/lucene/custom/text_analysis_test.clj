@@ -60,7 +60,16 @@
                    {:tokenizer :keyword}
                    {:field-a {:token-filters [:reverseString]}
                     :field-b {:token-filters [:uppercase]}})]
-    (is (= {:field-a ["oof" "rab" "zab"]
-            :field-b ["AA" "BB"]
-            :field-c ["Apache Lucene"]}
-           (text-analysis/doc->token-strings doc analyzer)))))
+    (testing "doc->token-strings"
+      (is (= {:field-a ["oof" "rab" "zab"]
+              :field-b ["AA" "BB"]
+              :field-c ["Apache Lucene"]}
+             (text-analysis/doc->token-strings doc analyzer))))
+    (testing "doc->tokens"
+      (is (= {:end_offset     13
+              :position       0
+              :positionLength 1
+              :start_offset   0
+              :token          "Apache Lucene"
+              :type           "word"}
+             (into {} (:field-c (text-analysis/doc->tokens doc analyzer))))))))

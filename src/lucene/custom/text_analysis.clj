@@ -127,3 +127,11 @@
       (fn analyze [acc k v]
         (assoc! acc k (text->token-strings v analyzer k)))
                (transient {}) doc)))
+
+(defn doc->tokens
+  [^Map doc ^Analyzer analyzer]
+  (persistent!
+    (reduce-kv
+      (fn analyze [acc k v]
+        (assoc! acc k (text->tokens v analyzer k)))
+      (transient {}) doc)))
