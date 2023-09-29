@@ -1,5 +1,6 @@
 (ns lucene.custom.text-analysis-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.string :as str]
+            [clojure.test :refer [deftest is testing]]
             [lucene.custom.analyzer-wrappers :as analyzer]
             [lucene.custom.text-analysis :as text-analysis])
   (:import (org.apache.lucene.analysis.standard StandardAnalyzer)
@@ -51,3 +52,28 @@
       (is (= ["Test" "TEXT"] (text-analysis/text->token-strings "Test TEXT" analyzer field-name)))
       (is (= 2 (count (text-analysis/text->tokens "Test TEXT" analyzer field-name))))
       (is (string? (text-analysis/text->graph "Test TEXT" analyzer field-name))))))
+
+(deftest multifield-analysis
+  (let [doc {:field-a "foo bar baz"
+             :field-b "aa bb"
+             :field-c "Apache Lucene"}
+        analyzer (analyzer/->per-field-analyzer-wrapper
+                   {:tokenizer :keyword}
+                   {:field-a {:token-filters [:reverseString]}
+                    :field-b {:token-filters [:uppercase]}})]
+    (testing "doc->token-strings"
+      (is (= {:field-a ["oof" "rab" "zab"]
+              :field-b ["AA" "BB"]
+              :field-c ["Apache Lucene"]}
+             (text-analysis/doc->token-strings doc analyzer))))
+    (testing "doc->tokens"
+      (is (= {:end_offset     13
+              :position       0
+              :positionLength 1
+              :start_offset   0
+              :token          "Apache Lucene"
+              :type           "word"}
+             (into {} (:field-c (text-analysis/doc->tokens doc analyzer))))))
+    (testing "doc->graph"
+      (is (str/starts-with?
+            (:field-a (text-analysis/doc->graph doc analyzer)) "digraph")))))

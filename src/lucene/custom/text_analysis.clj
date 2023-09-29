@@ -1,5 +1,6 @@
 (ns lucene.custom.text-analysis
   (:import (java.io StringReader PrintWriter StringWriter)
+           (java.util Map)
            (org.apache.lucene.analysis Analyzer TokenStream TokenStreamToDot)
            (org.apache.lucene.analysis.tokenattributes CharTermAttribute OffsetAttribute
                                                        PositionIncrementAttribute TypeAttribute
@@ -89,14 +90,14 @@
            ^CharTermAttribute char-term-attribute (.addAttribute token-stream CharTermAttribute)
            ^OffsetAttribute offset-attribute (.addAttribute token-stream OffsetAttribute)
            ^PositionIncrementAttribute position-attribute (.addAttribute token-stream PositionIncrementAttribute)
-           ^TypeAttribute type-attriubte (.addAttribute token-stream TypeAttribute)
+           ^TypeAttribute type-attribute (.addAttribute token-stream TypeAttribute)
            ^PositionLengthAttribute position-length-attribute (.addAttribute token-stream PositionLengthAttribute)]
        (.reset token-stream)
        (loop [acc (transient [])
               position 0]
          (if (.incrementToken token-stream)
            (recur (conj! acc (->TokenRecord (.toString char-term-attribute)
-                                            (.type type-attriubte)
+                                            (.type type-attribute)
                                             (.startOffset offset-attribute)
                                             (.endOffset offset-attribute)
                                             position
@@ -115,3 +116,33 @@
   (text->token-strings "foo text bar BestClass fooo name" (StandardAnalyzer.))
   (text->graph "fooBarBazs" (StandardAnalyzer.))
   (text->tokens "pre BestClass post" (StandardAnalyzer.)))
+
+(defn- doc-analysis [doc analyzer analysis-fn]
+  (persistent!
+    (reduce-kv
+      (fn analyze [acc k v]
+        (assoc! acc k (analysis-fn v analyzer k)))
+      (transient {}) doc)))
+
+(defn doc->token-strings
+  "Given a document iterates through all its fields, applies an analyzer to each field,
+  and returns a map with the same keys and the analyzed text.
+  TIP: the analyzer probably is the PerFieldAnalyzerWrapper."
+  [^Map doc ^Analyzer analyzer]
+  (doc-analysis doc analyzer text->token-strings))
+
+(defn doc->tokens
+  "Each field is analyzed into tokens.
+  Params:
+  * doc: flat associative data type
+  * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
+  [^Map doc ^Analyzer analyzer]
+  (doc-analysis doc analyzer text->tokens))
+
+(defn doc->graph
+  "Each field is analyzed into graph.
+  Params:
+  * doc: flat associative data type
+  * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
+  [^Map doc ^Analyzer analyzer]
+  (doc-analysis doc analyzer text->graph))
