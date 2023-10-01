@@ -110,6 +110,12 @@
              (.close token-stream)
              (persistent! acc))))))))
 
+(defn normalize
+  ([^String text] (normalize text (StandardAnalyzer.)))
+  ([^String text ^Analyzer analyzer] (normalize text analyzer FIELD_NAME))
+  ([^String text ^Analyzer analyzer field-name]
+   (.utf8ToString (.normalize analyzer (name field-name) text))))
+
 (comment
   (text->token-strings "foo text bar BestClass fooo name")
   (text->token-strings nil)
