@@ -111,6 +111,8 @@
              (persistent! acc))))))))
 
 (defn normalize
+  "Given a text invokes Analyzer::normalize on it.
+  Returns a String representation of a ByteRef."
   ([^String text] (normalize text (StandardAnalyzer.)))
   ([^String text ^Analyzer analyzer] (normalize text analyzer FIELD_NAME))
   ([^String text ^Analyzer analyzer field-name]
