@@ -4,6 +4,8 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+- #10: function to call `Analyzer::normalize`
+
 ## v1.0.30 (2023-09-29)
 
 - `field-name` param can be either String or `clojure.lang.Named` (#8)

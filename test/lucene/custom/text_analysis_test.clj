@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.test :refer [deftest is testing]]
             [lucene.custom.analyzer-wrappers :as analyzer]
+            [lucene.custom.analyzer :as a]
             [lucene.custom.text-analysis :as text-analysis])
   (:import (org.apache.lucene.analysis.standard StandardAnalyzer)
            (org.apache.lucene.analysis.miscellaneous PerFieldAnalyzerWrapper)
@@ -77,3 +78,17 @@
     (testing "doc->graph"
       (is (str/starts-with?
             (:field-a (text-analysis/doc->graph doc analyzer)) "digraph")))))
+
+(deftest normalization
+  (let [analyzer (a/create
+                   {:char-filters
+                    [{:patternReplace {:pattern     "(-?\\d+)(\\.\\d+)?"
+                                       :replacement "000$1$2"}}
+                     {:patternReplace {:pattern     ".*([-\\d]{5})(\\.\\d+)?$"
+                                       :replacement "$1$2"}}]
+                    :tokenizer :keyword})
+        text "123"]
+    (is (= "123" (text-analysis/normalize text)))
+    (is (= "00123" (text-analysis/normalize text analyzer)))
+
+    (is (= {:a "00123"} (text-analysis/normalize-doc {:a "123"} analyzer)))))

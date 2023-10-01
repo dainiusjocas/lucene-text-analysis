@@ -110,6 +110,14 @@
              (.close token-stream)
              (persistent! acc))))))))
 
+(defn normalize
+  "Given a text invokes Analyzer::normalize on it.
+  Returns a String representation of a ByteRef."
+  ([^String text] (normalize text (StandardAnalyzer.)))
+  ([^String text ^Analyzer analyzer] (normalize text analyzer FIELD_NAME))
+  ([^String text ^Analyzer analyzer field-name]
+   (.utf8ToString (.normalize analyzer (name field-name) text))))
+
 (comment
   (text->token-strings "foo text bar BestClass fooo name")
   (text->token-strings nil)
@@ -146,3 +154,11 @@
   * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
   [^Map doc ^Analyzer analyzer]
   (doc-analysis doc analyzer text->graph))
+
+(defn normalize-doc
+  "Normalizes each field with an analyzer.
+  Params:
+  * doc: flat associative data type
+  * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
+  [^Map doc ^Analyzer analyzer]
+  (doc-analysis doc analyzer normalize))
