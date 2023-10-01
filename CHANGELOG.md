@@ -4,6 +4,8 @@ For a list of breaking changes, check [here](#breaking-changes).
 
 ## Unreleased
 
+## v1.0.32 (2023-10-02)
+
 - #10: function to call `Analyzer::normalize`
 
 ## v1.0.30 (2023-09-29)
