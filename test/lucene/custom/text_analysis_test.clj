@@ -89,4 +89,6 @@
                     :tokenizer :keyword})
         text "123"]
     (is (= "123" (text-analysis/normalize text)))
-    (is (= "00123" (text-analysis/normalize text analyzer)))))
+    (is (= "00123" (text-analysis/normalize text analyzer)))
+
+    (is (= {:a "00123"} (text-analysis/normalize-doc {:a "123"} analyzer)))))

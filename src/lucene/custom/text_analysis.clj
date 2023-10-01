@@ -152,3 +152,11 @@
   * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
   [^Map doc ^Analyzer analyzer]
   (doc-analysis doc analyzer text->graph))
+
+(defn normalize-doc
+  "Normalizes each field with an analyzer.
+  Params:
+  * doc: flat associative data type
+  * analyzer: Lucene Analyzer, but probably you want a PerFieldAnalyzerWrapper"
+  [^Map doc ^Analyzer analyzer]
+  (doc-analysis doc analyzer normalize))
